@@ -30,7 +30,7 @@ static	inline void * lznewdata(lua_State *L, const char *name, int size)
 /*************************************************************************
  * hmac api implementations
  **************************************************************************/
-METHOD(hmac_api)
+METHOD(hmac64_api)
 {
 	char ipad[64], opad[64];
 	int i;
@@ -48,7 +48,7 @@ METHOD(hmac_api)
 	lua_pushlstring(L, opad, 64);
 	return 2;
 }
-METHOD(hmac2_api)
+METHOD(hmac128_api)
 {
 	char ipad[128], opad[128];
 	int i;
@@ -477,8 +477,8 @@ static luaL_reg lhash_api[] = {
 	{ "sha256", sha256_api },
 	{ "sha384", sha384_api },
 	{ "sha512", sha512_api },
-	{ "hmac", hmac_api },
-	{ "hmac2", hmac2_api },
+	{ "hmac64", hmac64_api },
+	{ "hmac128", hmac128_api },
 	{ "md5", md5_api },
 	{ "crc32", crc_api },
 	{ "random", random_api },

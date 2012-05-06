@@ -1,4 +1,6 @@
 require "lhash"
+require "lhash.hmac"
+
 function phex(s)
 	return(string.gsub(s, ".", function(c) return string.format("%02x", string.byte(c)) end))
 end
@@ -34,18 +36,21 @@ assert(test2("md5") == "ede3d3b685b4e137ba4cb2521329a75e")
 ------------------------
 function hmac(macfunc, func, str, key)
 	local hmaci, hmaco = lhash[macfunc](key)
-	return phex(func():update(hmaco):update(func():update(hmaci):update(str):final()):final())
+	local a = lhash[func]():update(hmaco):update(lhash[func]():update(hmaci):update(str):final()):final()
+	local b = lhash.hmac[func](key, str)
+	assert(a==b)
+	assert(lhash.hmac[func](key):final(str) == a)
+	return phex(a)
 end
 
 -- RFC2202
-assert(hmac("hmac",lhash.md5, "what do ya want for nothing?", "Jefe") == "750c783e6ab0b503eaa86e310a5db738")
-assert(hmac("hmac",lhash.sha1, "what do ya want for nothing?", "Jefe") == "effcdf6ae5eb2fa2d27416d5f184df9c259a7c79")
+assert(hmac("hmac64","md5", "what do ya want for nothing?", "Jefe") == "750c783e6ab0b503eaa86e310a5db738")
+assert(hmac("hmac64","sha1", "what do ya want for nothing?", "Jefe") == "effcdf6ae5eb2fa2d27416d5f184df9c259a7c79")
 
 -- RFC4231
-assert(hmac("hmac",lhash.sha256, "what do ya want for nothing?", "Jefe") == "5bdcc146bf60754e6a042426089575c75a003f089d2739839dec58b964ec3843")
---print(hmac("hmac2",lhash.sha384, "what do ya want for nothing?", "Jefe"))
-assert(hmac("hmac2",lhash.sha384, "what do ya want for nothing?", "Jefe") == "af45d2e376484031617f78d2b58a6b1b9c7ef464f5a01b47e42ec3736322445e8e2240ca5e69e2c78b3239ecfab21649")
-assert(hmac("hmac2",lhash.sha512, "what do ya want for nothing?", "Jefe") == "164b7a7bfcf819e2e395fbe73b56e0a387bd64222e831fd610270cd7ea2505549758bf75c05a994a6d034f65f8f0e6fdcaeab1a34d4a6b4b636e070a38bce737")
+assert(hmac("hmac64","sha256", "what do ya want for nothing?", "Jefe") == "5bdcc146bf60754e6a042426089575c75a003f089d2739839dec58b964ec3843")
+assert(hmac("hmac128","sha384", "what do ya want for nothing?", "Jefe") == "af45d2e376484031617f78d2b58a6b1b9c7ef464f5a01b47e42ec3736322445e8e2240ca5e69e2c78b3239ecfab21649")
+assert(hmac("hmac128","sha512", "what do ya want for nothing?", "Jefe") == "164b7a7bfcf819e2e395fbe73b56e0a387bd64222e831fd610270cd7ea2505549758bf75c05a994a6d034f65f8f0e6fdcaeab1a34d4a6b4b636e070a38bce737")
 
 print("All tests passed.")
 
