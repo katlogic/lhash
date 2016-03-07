@@ -1,8 +1,10 @@
-OBJ=lhash.o crc32.o sha1.o sha2.o md5.o rand.o
 CFLAGS=-I/usr/include/lua5.1 -O2 -Wall -fPIC 
+all: sha1.so sha2.so sha3.so md5.so
+.o.so:
+	$(CC) $(CFLAGS) -shared $< -o $@
 .c.o:
 	$(CC) $(CFLAGS) -c $< -o $@
-lhash.so: $(OBJ)
-	$(CC) -shared $(OBJ) -o $@
+.c.o:
+	$(CC) $(CFLAGS) -c $< -o $@
 clean:
 	rm -f *.o *.so
