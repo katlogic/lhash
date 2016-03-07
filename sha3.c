@@ -1,7 +1,7 @@
 #define HASH_BITS 256 /* 224-512 */
 #define HASH_NAME sha3
 #define HASH_WORDS 25
-#define HASH_UPDATE (200 - 2 * ((HASH_DIGEST * 64) / 8))
+#define HASH_UPDATE (200 - 2 * (HASH_BITS / 8))
 #define HASH_FLAGS HASH_HMAC|HASH_LE|HASH_64
 
 #include "common.h"
@@ -75,8 +75,9 @@ static void final(struct sha3 *ctx, uint8_t *out)
 	uint64_t tst[25];
 	uint8_t tmp[HASH_UPDATE];
 	size_t nrem = ctx->used;
+	int i;
 
-	memcpy(tst, ctx->state, sizeof st);
+	memcpy(tst, ctx->state, sizeof tst);
 	memcpy(tmp, ctx->buf, nrem);
 	tmp[nrem++] = 1;
 	memset(tmp + nrem, 0, HASH_UPDATE - nrem);
@@ -85,7 +86,6 @@ static void final(struct sha3 *ctx, uint8_t *out)
 	for (i = 0; i < HASH_BITS/64; i++)
 		((uint64_t*)out)[i] = HOST2LE64(tst[i]);
 }
-
 
 #define lua_binding luaopen_sha3
 #define hash_name "sha3"

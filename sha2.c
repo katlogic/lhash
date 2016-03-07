@@ -1,6 +1,6 @@
 #define HASH_BITS 256
 #define HASH_NAME sha256
-#define HASH_FLAGS HASH_MD|HASH_PBKDF2|HASH_HMAC
+#define HASH_FLAGS HASH_MD|HASH_PBKDF2|HASH_HMAC|HASH_INIT
 
 #include "common.h"
 

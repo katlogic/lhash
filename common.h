@@ -9,6 +9,7 @@
 #define HASH_LE	 	4
 #define HASH_PBKDF2	8
 #define HASH_64 	16
+#define HASH_INIT 	32
 
 #if (HASH_FLAGS) & HASH_64
 #define HASH_WORD 	uint64_t
@@ -41,7 +42,7 @@ struct HASH_NAME {
 #define ROR(w, s) (((w) >> (s)) | ((w) << ((s))))
 
 #if defined(__GNUC__) || defined(__clang__)
-#define SWAP_ENDIAN(x) __builtin_bswap32(x);
+#define SWAP_ENDIAN(x) __builtin_bswap32(x)
 #define SWAP_ENDIAN64(x) __builtin_bswap64(x);
 #else
 #define SWAP_ENDIAN(x) (((x<<24)&0xff000000)|((x<<8)&0x00ff0000)| \

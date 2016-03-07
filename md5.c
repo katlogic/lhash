@@ -84,5 +84,6 @@ static void transform(uint32_t *state, const uint8_t *data)
 }
 
 #define lua_binding luaopen_md5
+#define hash_name "md5"
 #include "common.c"
 
