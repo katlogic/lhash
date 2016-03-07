@@ -37,7 +37,7 @@ static void transform(uint64_t st[25], const uint8_t *in)
 	uint64_t t, bc[5];
 
 	for (i = 0; i < HASH_UPDATE/8; i++)
-		st[i] ^= HOST2LE64(in[i]);
+		st[i] ^= HOST2LE64((((uint64_t*)in)[i]));
 
 	for (round = 0; round < 24; round++) {
 		for (i = 0; i < 5; i++)	 
@@ -79,7 +79,7 @@ static void final(struct sha3 *ctx, uint8_t *out)
 
 	memcpy(tst, ctx->state, sizeof tst);
 	memcpy(tmp, ctx->buf, nrem);
-	tmp[nrem++] = 1;
+	tmp[nrem++] = 6;
 	memset(tmp + nrem, 0, HASH_UPDATE - nrem);
 	tmp[HASH_UPDATE-1] ^= 0x80;
 	transform(tst, tmp);

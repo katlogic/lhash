@@ -6,6 +6,7 @@ static void update(struct HASH_NAME *ctx, const uint8_t *in, size_t len)
 			if (room > len)
 				room = len;
 			memcpy(ctx->buf + ctx->used, in, room);
+			in += room;
 			ctx->used += room;
 			ctx->total += room;
 			len -= room;
@@ -78,16 +79,12 @@ static void do_updates(lua_State *L, struct HASH_NAME *ctx, int from, int to)
 	}
 }
 
-#if (HASH_FLAGS) & HASH_HMAC
-static int m_hmac(lua_State *L)
+static void do_hmac(struct HASH_NAME *ctx, const uint8_t *key, size_t keysz,
+		const uint8_t *data, size_t datasz)
 {
-	struct HASH_NAME *ctx = toctx(L, 1);
-	uint8_t buf[HASH_UPDATE] = {0};
-	uint8_t ikey[HASH_UPDATE], okey[HASH_UPDATE];
-	size_t keysz, datasz;
 	int i;
-	const char *key = luaL_checklstring(L, 2, &keysz);
-	const char *data = luaL_checklstring(L, 3, &datasz);
+	uint8_t ikey[HASH_UPDATE], okey[HASH_UPDATE];
+	uint8_t buf[HASH_UPDATE] = {0};
 	reset(ctx);
 	if (keysz > HASH_UPDATE) {
 		update(ctx, (const uint8_t*)key, keysz);
@@ -105,7 +102,17 @@ static int m_hmac(lua_State *L)
 	final(ctx, buf);
 	reset(ctx);
 	update(ctx, okey, HASH_UPDATE);
-	update(ctx, buf, HASH_UPDATE);
+	update(ctx, buf, HASH_BYTES);
+}
+
+#if (HASH_FLAGS) & HASH_HMAC
+static int m_hmac(lua_State *L)
+{
+	struct HASH_NAME *ctx = toctx(L, 1);
+	size_t keysz, datasz;
+	const char *key = luaL_checklstring(L, 2, &keysz);
+	const char *data = luaL_checklstring(L, 3, &datasz);
+	do_hmac(ctx, (const uint8_t*)key, keysz, (const uint8_t*)data, datasz);
 	lua_settop(L, 1);
 	return 1;
 }

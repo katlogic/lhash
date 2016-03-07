@@ -23,7 +23,7 @@
 #define HASH_WORDS 	(HASH_BITS / HASH_WORDBITS)
 #endif
 
-#define HASH_BYTES 	(HASH_WORDS * HASH_WORDBITS / 8)
+#define HASH_BYTES 	(HASH_BITS / 8)
 
 #if (HASH_FLAGS) & HASH_MD
 #define HASH_UPDATE 	64
