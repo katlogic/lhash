@@ -42,7 +42,7 @@ static void transform(uint32_t *state, const uint8_t *in)
 	state[4] += e;
 }
 
-#define lua_binding luaopen_sha1
 #define hash_name "sha1"
 #include "common.c"
+LUA_EXPORT(sha1)
 

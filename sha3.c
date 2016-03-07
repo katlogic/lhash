@@ -87,7 +87,6 @@ static void final(struct sha3 *ctx, uint8_t *out)
 		((uint64_t*)out)[i] = HOST2LE64(tst[i]);
 }
 
-#define lua_binding luaopen_sha3
 #define hash_name "sha3"
 #include "common.c"
-
+LUA_EXPORT(sha3)

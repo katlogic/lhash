@@ -199,7 +199,7 @@ static const luaL_Reg 	methods[] = {
 };
 
 
-int lua_binding(lua_State *L)
+static int lua_binding(lua_State *L)
 {
 	lua_newtable(L);
 	lua_pushvalue(L, -1);

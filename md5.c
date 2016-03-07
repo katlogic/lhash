@@ -83,7 +83,7 @@ static void transform(uint32_t *state, const uint8_t *data)
 	state[3] += d;
 }
 
-#define lua_binding luaopen_md5
 #define hash_name "md5"
 #include "common.c"
+LUA_EXPORT(md5)
 

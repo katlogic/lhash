@@ -89,3 +89,7 @@ struct HASH_NAME {
 #define luaL_setfuncs(L, reg, nup) luaL_openlib(L, NULL, reg, nup)
 #endif
 
+#define LUA_EXPORT(n) \
+	int luaopen_##n(lua_State *L) { return lua_binding(L); } \
+	int luaopen_lhash_##n(lua_State *L) { return lua_binding(L); };
+
