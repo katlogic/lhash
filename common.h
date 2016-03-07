@@ -39,7 +39,7 @@ struct HASH_NAME {
 
 #define ROL32(w, s) (((w) << (s)) | ((w) >> (32 - (s))))
 #define ROL64(w, s) (((w) << (s)) | ((w) >> (64 - (s))))
-#define ROR(w, s) (((w) >> (s)) | ((w) << ((s))))
+#define ROR32(w, s) (((w) >> (s)) | ((w) << (32 - (s))))
 
 #if defined(__GNUC__) || defined(__clang__)
 #define SWAP_ENDIAN(x) __builtin_bswap32(x)
@@ -79,8 +79,10 @@ struct HASH_NAME {
 
 #if (HASH_FLAGS) & HASH_LE
 #define HOST2HASH(x) HOST2LE(x)
+#define HOST2HASH64(x) HOST2LE64(x)
 #else
 #define HOST2HASH(x) HOST2BE(x)
+#define HOST2HASH64(x) HOST2BE64(x)
 #endif
 
 #if LUA_VERSION_NUM < 502

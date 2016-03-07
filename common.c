@@ -32,18 +32,24 @@ static void reset(struct HASH_NAME *ctx)
 #if (HASH_FLAGS) & HASH_MD
 static void final(struct HASH_NAME *ctx, uint8_t *out)
 {
-	uint32_t bits[2];
-	static uint8_t padding[HASH_UPDATE] = {0x80};
-	struct HASH_NAME tmp = *ctx;
-	int i, pad = (HASH_UPDATE-ctx->used)-8;
-	if (pad <= 0)
-		pad += HASH_UPDATE;
-	bits[0] = HOST2HASH(ctx->total>>29);
-	bits[1] = HOST2HASH(ctx->total<<3);
-	update(&tmp, padding, pad);
-	update(&tmp, (const uint8_t*)bits, 8);
+	uint8_t buf[HASH_UPDATE];
+	uint32_t i, used = ctx->used;
+	HASH_WORD state[HASH_WORDS];
+	memcpy(buf, ctx->buf, HASH_UPDATE);
+	memcpy(state, ctx->state, sizeof(state));
+	buf[used++] = 0x80;
+	if (used <= (HASH_UPDATE-8)) {
+		memset(buf + used, 0, (HASH_UPDATE-8)-used);
+	} else {
+		memset(buf + used, 0, HASH_UPDATE-used);
+		transform(state, buf);
+		memset(buf, 0, HASH_UPDATE-8);
+
+	}
+	*((uint64_t*)(buf+HASH_UPDATE-8)) = HOST2HASH64(ctx->total<<3);
+	transform(state, buf);
 	for (i = 0; i < HASH_WORDS; i++)
-		((HASH_WORD*)(out))[i] = HOST2HASH(tmp.state[i]);
+		((HASH_WORD*)(out))[i] = HOST2HASH(state[i]);
 }
 #endif
 
@@ -112,7 +118,7 @@ static int m_create(lua_State *L)
 	reset(ctx);
 	lua_pushvalue(L, lua_upvalueindex(1));
 	lua_setmetatable(L, -2);
-	do_updates(L, ctx, 2, lua_gettop(L)-1);
+	do_updates(L, ctx, 1, lua_gettop(L)-1);
 	return 1;
 }
 
@@ -189,11 +195,15 @@ static const luaL_Reg 	methods[] = {
 int lua_binding(lua_State *L)
 {
 	lua_newtable(L);
-	luaL_setfuncs(L, methods, 0);
+	lua_pushvalue(L, -1);
+	luaL_setfuncs(L, methods, 1);
+
 	lua_pushvalue(L, -1);
 	lua_setmetatable(L, -2);
+
 	lua_pushvalue(L, -1);
 	lua_setfield(L, -2, "__index");
+
 	lua_pushcclosure(L, m_create, 1);
 	return 1;
 }

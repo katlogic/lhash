@@ -1,6 +1,6 @@
 #define HASH_BITS 128
 #define HASH_NAME md5
-#define HASH_FLAGS HASH_MD|HASH_HMAC|HASH_LE
+#define HASH_FLAGS HASH_MD|HASH_HMAC|HASH_LE|HASH_INIT
 
 #include "common.h"
 
